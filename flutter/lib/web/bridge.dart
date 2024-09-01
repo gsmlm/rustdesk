@@ -234,7 +234,7 @@ class RustdeskImpl {
   }
 
   String getLocalKbLayoutType({dynamic hint}) {
-    throw js.context.callMethod('getByName', ['option:local', 'kb_layout']);
+    return js.context.callMethod('getByName', ['option:local', 'kb_layout']);
   }
 
   Future<void> setLocalKbLayoutType(
@@ -351,7 +351,7 @@ class RustdeskImpl {
 
   bool sessionIsKeyboardModeSupported(
       {required UuidValue sessionId, required String mode, dynamic hint}) {
-    return mode == kKeyLegacyMode;
+    return [kKeyLegacyMode, kKeyMapMode].contains(mode);
   }
 
   bool sessionIsMultiUiSession({required UuidValue sessionId, dynamic hint}) {
@@ -413,6 +413,17 @@ class RustdeskImpl {
             if (downOrUp) 'down': 'true',
           })
         ]));
+  }
+
+  Future<void> sessionHandleFlutterRawKeyEvent(
+      {required UuidValue sessionId,
+      required String name,
+      required int platformCode,
+      required int positionCode,
+      required int lockModes,
+      required bool downOrUp,
+      dynamic hint}) {
+    throw UnimplementedError();
   }
 
   void sessionEnterOrLeave(
@@ -725,7 +736,8 @@ class RustdeskImpl {
   }
 
   Future<String> mainGetLicense({dynamic hint}) {
-    throw UnimplementedError();
+    // TODO: implement
+    return Future(() => '');
   }
 
   Future<String> mainGetVersion({dynamic hint}) {
@@ -964,10 +976,11 @@ class RustdeskImpl {
 
   Future<void> mainSetUserDefaultOption(
       {required String key, required String value, dynamic hint}) {
-    return js.context.callMethod('getByName', [
+    js.context.callMethod('setByName', [
       'option:user:default',
       jsonEncode({'name': key, 'value': value})
     ]);
+    return Future.value();
   }
 
   String mainGetUserDefaultOption({required String key, dynamic hint}) {
@@ -1041,7 +1054,7 @@ class RustdeskImpl {
   }
 
   Future<String> mainGetLangs({dynamic hint}) {
-    throw UnimplementedError();
+    return Future(() => js.context.callMethod('getByName', ['langs']));
   }
 
   Future<String> mainGetTemporaryPassword({dynamic hint}) {
@@ -1053,7 +1066,8 @@ class RustdeskImpl {
   }
 
   Future<String> mainGetFingerprint({dynamic hint}) {
-    throw UnimplementedError();
+    // TODO: implement
+    return Future.value('');
   }
 
   Future<String> cmGetClientsState({dynamic hint}) {
@@ -1095,7 +1109,7 @@ class RustdeskImpl {
   }
 
   String mainSupportedHwdecodings({dynamic hint}) {
-    throw UnimplementedError();
+    return '{}';
   }
 
   Future<bool> mainIsRoot({dynamic hint}) {
@@ -1284,8 +1298,7 @@ class RustdeskImpl {
   }
 
   Future<String> mainGetBuildDate({dynamic hint}) {
-    // TODO
-    throw UnimplementedError();
+    return Future(() => js.context.callMethod('getByName', ['build_date']));
   }
 
   String translate(
